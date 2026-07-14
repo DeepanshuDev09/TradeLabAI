@@ -46,7 +46,7 @@ const Terminal = () => {
     };
 
     const response = await axios.post(
-      "http://localhost:5000/api/backtest",
+      "https://tradelabai.onrender.com/api/backtest",
       config
     );
 
