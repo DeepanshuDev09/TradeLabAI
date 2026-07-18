@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router";
 import ContentHome from "./ContentHome";
 import MoreAbout from "./MoreAbout";
 
-const head = () => {
+const Head = () => {
   const [coins, setCoins] = useState([]);
+  const [searchSymbol, setSearchSymbol] = useState("");
   const scrollRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCoins = async () => {
@@ -23,7 +26,6 @@ const head = () => {
         );
 
         setCoins(response.data);
-        console.log(response.data);
       } catch (err) {
         console.error(err);
       }
@@ -48,9 +50,10 @@ const head = () => {
     return () => clearInterval(interval);
   }, [coins]);
 
+
   return (
     <div className='bg-all bg-cover bg-center bg-fixed'>
-      
+
       <div className='flex pb-30 justify-between max-w-[1300px] mx-auto'>
         <div className='flex-col py-40 px-5'>
 
@@ -60,9 +63,21 @@ const head = () => {
 
           <p className='text-gray-400 text-xl font-medium pb-6 pt-3'>TradeLab-AI is a multi-asset backtesting platform. Make strategy on forex, stocks, and crypto with advanced tools, indicators trusted by numerous traders worldwide.</p>
 
-          <input className='text-gray-400 text-lg font-medium px-5 py-2 border border-gray-400 rounded-xl w-2/3' placeholder='Search Symbol' /> <br />
+          <div className='flex items-center gap-3 w-2/3'>
+            <button
+              onClick={() => navigate("/strategy")}
+              className='px-5 py-2 rounded-xl bg-amber-400 text-black font-semibold text-lg whitespace-nowrap hover:bg-amber-300 transition-colors'
+            >
+              Backtest Your Strategy Now
+            </button>
+          </div>
 
-          <button className='mt-6 bg-transparent text-white font-medium text-lg px-5 py-2 border border-gray-400 rounded-2xl'>Learn More</button>
+          <button
+            onClick={() => navigate("/features")}
+            className='mt-6 bg-transparent text-white font-medium text-lg px-5 py-2 border border-gray-400 rounded-2xl hover:border-amber-400 hover:text-amber-400 transition-colors'
+          >
+            Learn More
+          </button>
 
         </div>
         <div className='hidden [@media(min-width:950px)]:flex justify-center'>
@@ -78,7 +93,7 @@ const head = () => {
           {[...coins, ...coins].map((coin, index) => (
             <div
               key={index}
-              className="min-w-[180px] flex gap-2 p-4"
+              className="min-w-[180px] flex gap-2 p-4 cursor-pointer hover:bg-white/5 rounded-lg transition-colors"
             >
               <img className="w-5 h-5 rounded-full mt-0.5" src={coin.image} />
               <h2 className="text-white font-bold uppercase">
@@ -98,4 +113,4 @@ const head = () => {
   )
 }
 
-export default head
+export default Head;

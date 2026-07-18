@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router";
 import axios from "axios";
 
 /**
@@ -44,6 +45,7 @@ export default function AIStrategyBuilder() {
   const [expandedId, setExpandedId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   const isEditing = Boolean(form.id);
 
@@ -309,6 +311,12 @@ export default function AIStrategyBuilder() {
                       </div>
                     </div>
                     <div className="flex gap-2 flex-shrink-0">
+                      <button 
+                        onClick={() => navigate("/dashboard")}
+                        className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 hover:bg-zinc-800/60 transition-colors"
+                      >
+                        Backtest
+                      </button>
                       <button
                         onClick={() => setExpandedId(isExpanded ? null : s.id)}
                         className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 hover:bg-zinc-800/60 transition-colors"

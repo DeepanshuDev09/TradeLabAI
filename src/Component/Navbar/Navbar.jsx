@@ -63,11 +63,11 @@ const Navbar = () => {
         Strategies
       </Link>
 
-      <Link className="block px-6 py-4 hover:bg-gray-800" onClick={navClick}>
+      <Link to='/features' className="block px-6 py-4 hover:bg-gray-800" onClick={navClick}>
         Features
       </Link>
 
-      <Link className="block px-6 py-4 hover:bg-gray-800" onClick={navClick}>
+      <Link to='/about' className="block px-6 py-4 hover:bg-gray-800" onClick={navClick}>
         About
       </Link>
     </div>
