@@ -4,7 +4,9 @@ import Head from "./Component/Home/head";
 import Terminal from "./Component/Dashboard/Terminal";
 import { Route, Routes } from "react-router";
 import Strategy from './Component/Strategy/Strategy';
-import UploadStrategy from './Component/Strategy/UploadStrategy';
+import Features from './Component/Features/Features';
+import About from './Component/About/About'
+
 
 const App = () => {
   return (
@@ -14,9 +16,10 @@ const App = () => {
       <main className="pt-18 font-sans">
         <Routes>
           <Route path="/" element={<Head />} />
-          <Route path="/Dashboard" element={<Terminal />} />
+          <Route path="/dashboard" element={<Terminal />} />
           <Route path="/strategy" element={ <Strategy/>} />
-          <Route path="/UploadStrategy" element={ <UploadStrategy />} />
+          <Route path="/features" element={ <Features />} />
+          <Route path="/about" element={ <About />} />
         </Routes>
       </main>
     </>

@@ -28,10 +28,10 @@ const Navbar = () => {
     {/* Desktop Menu */}
     <div className="hidden md:flex gap-7 text-lg text-gray-400 font-medium">
       <Link to="/" className="hover:text-white">Home</Link>
-      <Link to="/Dashboard" className="hover:text-white">Back-Testing</Link>
-      <Link to="/Strategy" className="hover:text-white">Strategies</Link>
-      <Link className="hover:text-white">Features</Link>
-      <Link className="hover:text-white">About</Link>
+      <Link to="/dashboard" className="hover:text-white">Back-Testing</Link>
+      <Link to="/strategy" className="hover:text-white">Strategies</Link>
+      <Link to='/features' className="hover:text-white">Features</Link>
+      <Link to='/about' className="hover:text-white">About</Link>
     </div>
 
     {/* Mobile Button */}
@@ -55,11 +55,7 @@ const Navbar = () => {
         Home
       </Link>
 
-      <Link
-        to="/Dashboard"
-        className="block px-6 py-4 hover:bg-gray-800"
-        onClick={navClick}
-      >
+      <Link to="/Dashboard" className="block px-6 py-4 hover:bg-gray-800" onClick={navClick}>
         Back-Testing
       </Link>
 
