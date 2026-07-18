@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TradingViewChart from "./TradingViewChart";
 import axios from "axios";
+import { useSearchParams } from "react-router";
 
 const STRATEGY_STORAGE_KEY = "ai_generated_strategies";
 
@@ -31,7 +32,13 @@ const QUICK_SYMBOLS = {
 
 const Terminal = () => {
   const [market, setMarket] = useState("crypto");
-  const [symbol, setSymbol] = useState("BTCUSDT");
+  const [searchParams] = useSearchParams();
+  const [symbol, setSymbol] = useState(searchParams.get("symbol") || "BTCUSDT");
+
+  useEffect(() => {
+    const paramSymbol = searchParams.get("symbol");
+    if (paramSymbol) setSymbol(paramSymbol.toUpperCase());
+  }, [searchParams]);
   const [timeframe, setTimeframe] = useState("1h");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
