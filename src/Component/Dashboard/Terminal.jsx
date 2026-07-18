@@ -4,7 +4,33 @@ import axios from "axios";
 
 const STRATEGY_STORAGE_KEY = "ai_generated_strategies";
 
+const MARKET_OPTIONS = [
+  { value: "crypto", label: "Crypto (Binance)" },
+  { value: "stocks", label: "Stocks (Yahoo Finance)" },
+  { value: "forex", label: "Forex (Yahoo Finance)" },
+];
+
+const QUICK_SYMBOLS = {
+  crypto: [
+    { label: "BTC/USDT", value: "BTCUSDT" },
+    { label: "ETH/USDT", value: "ETHUSDT" },
+    { label: "Gold (PAXG/USDT)", value: "PAXGUSDT" },
+    { label: "Gold (XAUT/USDT)", value: "XAUTUSDT" },
+  ],
+  stocks: [
+    { label: "Apple", value: "AAPL" },
+    { label: "Tesla", value: "TSLA" },
+    { label: "NVIDIA", value: "NVDA" },
+  ],
+  forex: [
+    { label: "EUR/USD", value: "EURUSD=X" },
+    { label: "GBP/USD", value: "GBPUSD=X" },
+    { label: "USD/JPY", value: "USDJPY=X" },
+  ],
+};
+
 const Terminal = () => {
+  const [market, setMarket] = useState("crypto");
   const [symbol, setSymbol] = useState("BTCUSDT");
   const [timeframe, setTimeframe] = useState("1h");
   const [startDate, setStartDate] = useState("");
@@ -30,6 +56,12 @@ const Terminal = () => {
 
   const selectedStrategy = savedStrategies.find((s) => s.id === strategyId);
 
+  const handleMarketChange = (newMarket) => {
+    setMarket(newMarket);
+    // jump the symbol to a sensible default for the new market
+    setSymbol(QUICK_SYMBOLS[newMarket][0].value);
+  };
+
   const handleRunBacktest = async () => {
     if (!selectedStrategy) {
       setError("Select a saved strategy first (create one in the AI Strategy Builder).");
@@ -45,6 +77,7 @@ const Terminal = () => {
     setIsRunning(true);
 
     const config = {
+      market,
       symbol,
       timeframe,
       startDate,
@@ -83,6 +116,21 @@ const Terminal = () => {
         <div className="w-[350px] border border-gray-500 rounded-xl p-6 bg-black/30 backdrop-blur-md shadow-lg">
 
           <div className="mb-5">
+            <label className="block mb-2 text-lg font-medium">Market</label>
+            <select
+              value={market}
+              onChange={(e) => handleMarketChange(e.target.value)}
+              className="w-full bg-black border border-gray-400 rounded-lg px-4 py-2 text-white outline-none focus:border-blue-500"
+            >
+              {MARKET_OPTIONS.map((m) => (
+                <option key={m.value} value={m.value}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-5">
             <label className="block mb-2 text-lg font-medium">Symbol</label>
             <input
               type="text"
@@ -91,6 +139,29 @@ const Terminal = () => {
               placeholder="BTCUSDT"
               className="w-full bg-transparent border border-gray-400 rounded-lg px-4 py-2 text-white outline-none focus:border-blue-500"
             />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {QUICK_SYMBOLS[market].map((q) => (
+                <button
+                  key={q.value}
+                  type="button"
+                  onClick={() => setSymbol(q.value)}
+                  className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
+                    symbol === q.value
+                      ? "border-blue-500 text-blue-400 bg-blue-500/10"
+                      : "border-gray-600 text-gray-400 hover:border-gray-400"
+                  }`}
+                >
+                  {q.label}
+                </button>
+              ))}
+            </div>
+            {market !== "crypto" && (
+              <p className="text-xs text-gray-500 mt-2">
+                {market === "forex"
+                  ? 'Forex pairs need the "=X" suffix, e.g. EURUSD=X'
+                  : "Use the plain ticker symbol, e.g. AAPL"}
+              </p>
+            )}
           </div>
 
           <div className="mb-5">
@@ -202,7 +273,7 @@ const Terminal = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-5 mb-6">
-            <StatCard label="Profit Factor" value={result.stats.profitFactor.toFixed(2)} />
+            <StatCard label="Profit Factor" value={result.stats.profitFactor === null ? "∞" : result.stats.profitFactor.toFixed(2)} />
             <StatCard label="Candles Analyzed" value={result.candleCount} />
           </div>
 

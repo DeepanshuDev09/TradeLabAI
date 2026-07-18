@@ -9,12 +9,15 @@ const crypto = require("crypto");
 const ALLOWED_MODULES = new Set([
   "math",
   "statistics",
+  "pandas",
+  "numpy",
   "itertools",
   "functools",
   "collections",
   "decimal",
   "datetime",
   "json",
+  "zoneinfo", // needed for correct DST-aware session filters (e.g. NY session)
 ]);
 
 const BANNED_PATTERNS = [
@@ -152,9 +155,14 @@ function indent(code, spaces) {
 
 function execPython(scriptPath, candles) {
   return new Promise((resolve, reject) => {
-    // -I: isolated mode (ignores env vars, doesn't add user site-packages)
-    // -S: no site module (fewer implicit imports available)
-    const proc = spawn("python3", ["-I", "-S", scriptPath], {
+    // -I: isolated mode (ignores env vars like PYTHONPATH, skips the
+    // per-user site-packages directory). Deliberately NOT using -S here —
+    // that flag disables the site module entirely, which also blocks the
+    // main venv/site-packages directory, so pip-installed packages (like
+    // tzdata, needed for zoneinfo on Windows) would be invisible even
+    // after installing them. Security isolation here comes from the
+    // banned-pattern/import-allowlist checks in validateCode(), not from -S.
+    const proc = spawn("python3", ["-I", scriptPath], {
       stdio: ["pipe", "pipe", "pipe"],
     });
 

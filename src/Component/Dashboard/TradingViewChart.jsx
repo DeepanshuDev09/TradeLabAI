@@ -15,7 +15,7 @@ const TradingViewChart = ({ symbol }) => {
 
     script.innerHTML = JSON.stringify({
       autosize: true,
-      symbol: `BINANCE:${symbol}`,
+      symbol: `${symbol}`,
       interval: "D",
       timezone: "Etc/UTC",
       theme: "dark",
@@ -35,7 +35,7 @@ const TradingViewChart = ({ symbol }) => {
   }, [symbol]);
 
   return (
-    <div className="tradingview-widget-container w-full h-[600px]">
+    <div className="tradingview-widget-container w-full h-full">
       <div
         ref={container}
         className="tradingview-widget-container__widget w-full h-full"

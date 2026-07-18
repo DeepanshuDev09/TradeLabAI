@@ -96,6 +96,9 @@ function simulateTrades(candles, signals, riskParams = {}) {
     positionSizePercent = 100,
     stopLossPercent = 2,
     takeProfitPercent = 4,
+    riskMode = "percent", // "percent" | "fixed_dollar"
+    fixedRiskAmount = 10, // only used when riskMode === "fixed_dollar"
+    allowLeverage = false, // cap fixed-dollar sizing at available capital unless true
   } = riskParams;
 
   let capital = initialCapital;
@@ -163,7 +166,6 @@ function simulateTrades(candles, signals, riskParams = {}) {
     }
 
     if (!position && (signal.type === "buy" || signal.type === "short")) {
-      const capitalAtEntry = capital * (positionSizePercent / 100);
       const entryPrice = candle.close;
       const isLong = signal.type === "buy";
 
@@ -171,6 +173,24 @@ function simulateTrades(candles, signals, riskParams = {}) {
         signal.stop ?? entryPrice * (isLong ? 1 - stopLossPercent / 100 : 1 + stopLossPercent / 100);
       const takeProfitPrice =
         signal.target ?? entryPrice * (isLong ? 1 + takeProfitPercent / 100 : 1 - takeProfitPercent / 100);
+
+      let capitalAtEntry;
+
+      if (riskMode === "fixed_dollar") {
+        const stopDistance = Math.abs(entryPrice - stopPrice);
+        if (stopDistance <= 0) {
+          // Can't size a trade with zero stop distance — skip this signal entirely.
+          continue;
+        }
+        // Position value such that a full stop-loss hit loses exactly
+        // fixedRiskAmount: capitalAtEntry * (stopDistance / entryPrice) = fixedRiskAmount
+        capitalAtEntry = fixedRiskAmount * (entryPrice / stopDistance);
+        if (!allowLeverage) {
+          capitalAtEntry = Math.min(capitalAtEntry, capital);
+        }
+      } else {
+        capitalAtEntry = capital * (positionSizePercent / 100);
+      }
 
       position = {
         direction: isLong ? "long" : "short",
@@ -245,7 +265,7 @@ function computeStats({ trades, equityCurve, finalCapital, initialCapital }) {
     winRate: totalTrades ? (wins.length / totalTrades) * 100 : 0,
     totalReturnPercent: ((finalCapital - initialCapital) / initialCapital) * 100,
     maxDrawdownPercent,
-    profitFactor: grossLoss === 0 ? grossProfit : grossProfit / grossLoss,
+    profitFactor: grossLoss === 0 ? null : grossProfit / grossLoss,
     finalCapital,
   };
 }
