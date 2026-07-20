@@ -17,7 +17,7 @@ import axios from "axios";
  *   returns: { code }  (or { error } on failure)
  */
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://tradelabai.onrender.com/api";
 const STORAGE_KEY = "ai_generated_strategies";
 
 function loadStrategies() {
